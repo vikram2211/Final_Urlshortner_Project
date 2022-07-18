@@ -16,13 +16,14 @@ const createShortUrl = async function (req, res) {
         const longUrl = data.longUrl;
 
         if (!Object.keys(data).length) {
-            return res.status(400).send({ status: false, msg: "Please give some data to add " })
+            return res.status(400).send({ status: false, message: "Please give some data to add " })
         }
+        
         if (!isValid(longUrl)) {
-            return res.status(400).send({ status: false, msg: "Pleas provide long Url " })
+            return res.status(400).send({ status: false, message: "Pleas provide long Url " })
         }
         if (!validUrl.isUri(longUrl)) {
-            return res.status(400).send({ status: false, msg: "Please provide a valid Url" })
+            return res.status(400).send({ status: false, message: "Please provide a valid Url" })
         }
 
 
@@ -32,7 +33,7 @@ const createShortUrl = async function (req, res) {
 
         let check = await urlModel.findOne({ urlCode: urlCode, shortUrl: shortUrl });
         if (check) {
-            return res.status(409).send({ status: false, msg: "Urlcode or shorturl already presend ", urlDetails: shortUrl })
+            return res.status(409).send({ status: false, message: "Urlcode or shorturl already presend ", urlDetails: shortUrl })
         }
 
         let collection = {
@@ -44,12 +45,9 @@ const createShortUrl = async function (req, res) {
         let urlDetails = await urlModel.create(collection)
         return res.status(201).send({ status: true, data: collection })
 
-
-
-
     }
     catch (err) {
-        return res.status(500).send({ status: false, msg: err.message })
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 
@@ -58,12 +56,17 @@ const createShortUrl = async function (req, res) {
 const getUrlDetails = async function (req, res) {
     try {
         let params = req.params;
+
         let urlCode = params.urlCode;
+
         if (!Object.keys(params).length) {
-            return res.status(400).send({ status: false, message: "Please enter urlCode" })
+            return res.status(400).send({ status: false, message: "Please enter someData" })
         }
-
-
+        
+        if (!urlCode) {
+            return res.status(400).send({ status: false, message: "Please enter urlCode in params" })
+        }
+      
         let urlData = await urlModel.findOne({ urlCode: urlCode })
         if (!urlData) {
             return res.status(404).send({ status: false, message: "This code is not exist" })
