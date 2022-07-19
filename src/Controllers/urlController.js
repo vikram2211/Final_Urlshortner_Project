@@ -33,8 +33,6 @@ const createShortUrl = async function (req, res) {
 
         else {
             urlCode = shortid.generate()
-
-
         }
 
         let shortUrl = `http://localhost:3000/${urlCode}`
