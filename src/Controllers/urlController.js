@@ -20,7 +20,7 @@ const createShortUrl = async function (req, res) {
         }
         
         if (!isValid(longUrl)) {
-            return res.status(400).send({ status: false, message: "Pleas provide long Url " })
+            return res.status(400).send({ status: false, message: "Please provide long Url " })
         }
         if (!validUrl.isUri(longUrl)) {
             return res.status(400).send({ status: false, message: "Please provide a valid Url" })
@@ -33,7 +33,7 @@ const createShortUrl = async function (req, res) {
 
         let check = await urlModel.findOne({ urlCode: urlCode, shortUrl: shortUrl });
         if (check) {
-            return res.status(409).send({ status: false, message: "Urlcode or shorturl already presend ", urlDetails: shortUrl })
+            return res.status(409).send({ status: false, message: "Urlcode or shorturl already present", urlDetails: shortUrl })
         }
 
         let collection = {
