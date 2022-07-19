@@ -18,16 +18,24 @@ const createShortUrl = async function (req, res) {
         if (!Object.keys(data).length) {
             return res.status(400).send({ status: false, message: "Please give some data to add " })
         }
-        
+
         if (!isValid(longUrl)) {
             return res.status(400).send({ status: false, message: "Please provide long Url " })
         }
         if (!validUrl.isUri(longUrl)) {
             return res.status(400).send({ status: false, message: "Please provide a valid Url" })
         }
+        let url = await urlModel.findOne({ longUrl: longUrl }).select({ urlCode: 1, _id: 0 })
+        let urlCode;
+        if (url) {
+            urlCode = url.urlCode
+        }
+
+        else {
+            urlCode = shortid.generate()
 
 
-        let urlCode = shortid.generate()
+        }
 
         let shortUrl = `http://localhost:3000/${urlCode}`
 
@@ -61,12 +69,12 @@ const getUrlDetails = async function (req, res) {
 
         if (!Object.keys(params).length) {
             return res.status(400).send({ status: false, message: "Please enter someData" })
-        }        
+        }
         let urlData = await urlModel.findOne({ urlCode: urlCode })
         if (!urlData) {
             return res.status(404).send({ status: false, message: "This code is not exist" })
         }
-        return res.status(302).redirect(`${urlData.longUrl}`) 
+        return res.status(302).redirect(`${urlData.longUrl}`)
     }
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
