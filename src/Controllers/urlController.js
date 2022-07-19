@@ -61,19 +61,12 @@ const getUrlDetails = async function (req, res) {
 
         if (!Object.keys(params).length) {
             return res.status(400).send({ status: false, message: "Please enter someData" })
-        }
-        
-        if (!urlCode) {
-            return res.status(400).send({ status: false, message: "Please enter urlCode in params" })
-        }
-      
+        }        
         let urlData = await urlModel.findOne({ urlCode: urlCode })
         if (!urlData) {
             return res.status(404).send({ status: false, message: "This code is not exist" })
         }
-        return res.status(302).send({ status: true, message: "Redirect to", data: urlData.longUrl })
-
-
+        return res.status(302).redirect(`${urlData.longUrl}`) 
     }
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
