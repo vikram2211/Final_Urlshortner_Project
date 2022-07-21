@@ -126,7 +126,6 @@ const getUrlDetails = async function (req, res) {
             }
             else {
                 await SET_ASYNC(`${urlCode}`, JSON.stringify(urlData))
-                redisClient.expireat(key, parseInt((+new Date)/1000) + 86400);
                 console.log("Redirect from DB")
                 return res.status(302).redirect(`${urlData.longUrl}`)
 
