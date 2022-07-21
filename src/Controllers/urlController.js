@@ -4,6 +4,7 @@ const shortid = require("shortid");
 const redis = require("redis");
 
 const { promisify } = require("util");
+const { Console } = require("console");
 
 //Connect to redis
 const redisClient = redis.createClient(
@@ -60,7 +61,6 @@ const createShortUrl = async function (req, res) {
         if (cachUrl) {
             urlCode = cachUrl.urlCode;
             let shortUrl = `http://localhost:3000/${urlCode}`
-            // console.log("Already present in Redis server")
             return res.status(409).send({ status: false, message: "long Url already present in  redis server", urlDetails: shortUrl })
 
         }
@@ -71,7 +71,6 @@ const createShortUrl = async function (req, res) {
             urlCode = url.urlCode
             let shortUrl = `http://localhost:3000/${urlCode}`
             await SET_ASYNC(`${longUrl}`, JSON.stringify(url))//set in redis server
-            // console.log("Already present in DB")
             return res.status(409).send({ status: false, message: "long url already present in DB ", urlDetails: shortUrl })
 
         }
@@ -117,16 +116,20 @@ const getUrlDetails = async function (req, res) {
         let cachUrl = await GET_ASYNC(`${urlCode}`)
         let parseData = JSON.parse(cachUrl)
         if (cachUrl) {
+            console.log("Redirect from Redis server")
             return res.status(302).redirect(`${parseData.longUrl}`)
         }
         else {
             let urlData = await urlModel.findOne({ urlCode: urlCode })
             if (!urlData) {
-                return res.status(404).send({ status: false, message: "This code is not exist" })
+                return res.status(404).send({ status: false, message: "This  url-code is not exist" })
             }
             else {
                 await SET_ASYNC(`${urlCode}`, JSON.stringify(urlData))
+                redisClient.expireat(key, parseInt((+new Date)/1000) + 86400);
+                console.log("Redirect from DB")
                 return res.status(302).redirect(`${urlData.longUrl}`)
+
             }
         }
     }
