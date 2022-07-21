@@ -71,6 +71,7 @@ const createShortUrl = async function (req, res) {
             urlCode = url.urlCode
             let shortUrl = `http://localhost:3000/${urlCode}`
             await SET_ASYNC(`${longUrl}`, JSON.stringify(url))//set in redis server
+            redisClient.expireat(longUrl, parseInt((Date.now())/1000) + 30);
             return res.status(409).send({ status: false, message: "long url already present in DB ", urlDetails: shortUrl })
 
         }
@@ -94,6 +95,7 @@ const createShortUrl = async function (req, res) {
             shortUrl: urlDetails.shortUrl
         }
         await SET_ASYNC(`${longUrl}`, JSON.stringify(result))
+        redisClient.expireat(longUrl, parseInt((Date.now())/1000) + 30);
         return res.status(201).send({ status: true, data: result })
 
     }
@@ -114,6 +116,7 @@ const getUrlDetails = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please enter someData" })
         }
         let cachUrl = await GET_ASYNC(`${urlCode}`)
+        redisClient.expireat(urlCode, parseInt((Date.now())/1000) + 30);
         let parseData = JSON.parse(cachUrl)
         if (cachUrl) {
             console.log("Redirect from Redis server")
