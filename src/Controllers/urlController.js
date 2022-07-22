@@ -4,7 +4,7 @@ const shortid = require("shortid");
 const redis = require("redis");
 
 const { promisify } = require("util");
-const { Console } = require("console");
+
 
 //Connect to redis
 const redisClient = redis.createClient(
@@ -61,7 +61,7 @@ const createShortUrl = async function (req, res) {
         if (cachUrl) {
             urlCode = cachUrl.urlCode;
             let shortUrl = `http://localhost:3000/${urlCode}`
-            return res.status(409).send({ status: false, message: "long Url already present in  redis server", urlDetails: shortUrl })
+            return res.status(200).send({ status: true, message: "long Url already present in  redis server", urlDetails: shortUrl })
 
         }
         //search in db
@@ -72,7 +72,7 @@ const createShortUrl = async function (req, res) {
             let shortUrl = `http://localhost:3000/${urlCode}`
             await SET_ASYNC(`${longUrl}`, JSON.stringify(url))//set in redis server
             redisClient.expireat(longUrl, parseInt((Date.now())/1000) + 30);
-            return res.status(409).send({ status: false, message: "long url already present in DB ", urlDetails: shortUrl })
+            return res.status(200).send({ status: true, message: "long url already present in DB ", urlDetails: shortUrl })
 
         }
 
