@@ -2,6 +2,7 @@ const urlModel = require("../Models/urlModel");
 const validUrl = require("valid-url");
 const shortid = require("shortid");
 const redis = require("redis");
+const validator = require("validator")
 
 const { promisify } = require("util");
 
@@ -51,8 +52,11 @@ const createShortUrl = async function (req, res) {
         if (!isValid(longUrl)) {
             return res.status(400).send({ status: false, message: "Please provide long Url " })
         }
-        if (!validUrl.isUri(longUrl)) {
+        if (!validUrl.isWebUri(longUrl)) {
             return res.status(400).send({ status: false, message: "Please provide a valid Url" })
+        }
+        if(!validator.isURL(longUrl)){
+            return res.status(400).send({status:false,message:"Please provide a valid longurl"})
         }
         //Searching in Redis server
         let urlCode;
