@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bodyparser = require('body-parser');
 const route = require('./routes/route');
 
-app.use(bodyparser.json());
+app.use(bodyparser.json());                   //basically tells the system that you want json to be used
 app.use(bodyparser.urlencoded({extended: true}));
 
 mongoose.connect("mongodb+srv://Suman-1432:Suman1432@cluster0.bkkfmpr.mongodb.net/group14Database", {useNewUrlParser: true})
